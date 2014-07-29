@@ -1,0 +1,66 @@
+<div class="row">
+    <div class="col-sm-6">
+        <div class="text-center">
+            <qrcode data="{{voterUrl}}" size="200"></qrcode> 
+            <h4><a href="{{voterUrl}}">{{voterUrl}}</a></h4>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <strong>Registered Voters</strong>
+            </div>
+            <ul class="list-group">
+                <li class="list-group-item" ng-repeat="voter in voters">{{voter.name}}</li>
+            </ul>
+        </div>
+        <button ng-if="!voting && !voteOver" class="btn btn-primary btn-block" ng-click="startVote()">Start Vote</button>
+        <button ng-if="!voting && voteOver" class="btn btn-primary btn-block" ng-click="startVote()">Start New Vote</button>
+    </div>
+    <div class="col-sm-6">
+        <div ng-if="voting" class="text-center">
+            <p><i class="glyphicon glyphicon-time glyphicon-big"></i></p>
+            <p>Wait for everyone to vote</p>
+        </div>
+        <div ng-if="voteOver">
+            <div class="panel panel-success">
+                <div class="panel-heading text-center">
+                    <h4>S</h4>
+                </div>
+                <ul class="list-group">
+                    <li class="list-group-item" ng-repeat="voterName in votes.S">{{voterName}}</li>
+                </ul>
+            </div>
+            <div class="panel panel-success">
+                <div class="panel-heading text-center">
+                    <h4>M</h4>
+                </div>
+                <ul class="list-group">
+                    <li class="list-group-item" ng-repeat="voterName in votes.M">{{voterName}}</li>
+                </ul>
+            </div>
+            <div class="panel panel-warning ">
+                <div class="panel-heading text-center">
+                    <h4>L</h4>
+                </div>
+                <ul class="list-group">
+                    <li class="list-group-item" ng-repeat="voterName in votes.L">{{voterName}}</li>
+                </ul>
+            </div>
+            <div class="panel panel-danger">
+                <div class="panel-heading text-center">
+                    <h4>XL</h4>
+                </div>
+                <ul class="list-group">
+                    <li class="list-group-item" ng-repeat="voterName in votes.XL">{{voterName}}</li>
+                </ul>
+            </div>
+            <div class="panel panel-danger">
+                <div class="panel-heading text-center">
+                    <h4>XXL</h4>
+                </div>
+                <ul class="list-group">
+                    <li class="list-group-item" ng-repeat="voterName in votes.XXL">{{voterName}}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
