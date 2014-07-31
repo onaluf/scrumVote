@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('clientApp')
-    .controller('MonitorCtrl', function ($scope, $http, $route, $location, $socket) {
+    .controller('MonitorCtrl', function ($scope, $http, $route, $location, $socket, $sce, $bbpJiraRest) {
         
         var voteCounter = 0;
         $scope.voteId = $route.current.params.id;
@@ -9,7 +9,8 @@ angular.module('clientApp')
         $scope.voting = false;
         $scope.voteOver = false;
         $scope.voters = [];
-        
+        $scope.jiraTicket = "LBK-1489";
+
         $socket.on('connect', function() {
 
             $socket.emit('room', $scope.voteId);
@@ -19,10 +20,10 @@ angular.module('clientApp')
             // });
             
             $socket.on('vote', function (vote) {
-                if($scope.votes[vote.vote].indexOf(vote.voter) === -1) {
+                if(!_.find($scope.votes[vote.vote], { 'id': vote.voter.id })) {
                     console.log(vote);
                     $scope.votes[vote.vote].push(vote.voter);
-                    if($scope.votes.S.length + $scope.votes.M.length + $scope.votes.L.length +$scope.votes.XL.length + $scope.votes.XXL.length === $scope.voters.length) {
+                    if($scope.votesCount() === $scope.voters.length) {
                         $socket.emit('endVote');
                         $scope.voteOver = true;
                         $scope.voting = false;
@@ -49,6 +50,10 @@ angular.module('clientApp')
             };
         };
 
+        $scope.votesCount = function() {
+            return $scope.votes.S.length + $scope.votes.M.length + $scope.votes.L.length +$scope.votes.XL.length + $scope.votes.XXL.length;
+        }
+
         $scope.endVote = function () {
             $socket.emit('endVote');
             $scope.voting = false;
@@ -63,6 +68,21 @@ angular.module('clientApp')
             $scope.voters.splice(index, 1);
         }
 
+        $scope.clear = function() {
+            $scope.voting = false;
+            $scope.voteOver = false;
+        };
+
+        $scope.loadJiraTicket = function() {
+            console.log($scope.jiraTicket);
+            $bbpJiraRest.getIssue($scope.jiraTicket).then(function(response) {
+                console.log(response);
+                $scope.jiraIssue = response.data;
+            });
+        };
+
+        $scope.loadJiraTicket();
+        
     })
     .controller('VoterCtrl', function ($scope, $http, $route, $socket, $uuid) {
         $scope.voteId = $route.current.params.id;

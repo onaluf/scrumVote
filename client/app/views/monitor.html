@@ -15,19 +15,19 @@
                 </li>
             </ul>
         </div>
-        <button ng-if="!voting && !voteOver" class="btn btn-primary btn-block" ng-click="startVote()">Start Vote</button>
+        <button ng-if="!voting && !voteOver" ng-disabled="voters.length === 0" class="btn btn-primary btn-block" ng-click="startVote()">Start Vote</button>
         <button ng-if="voting && !voteOver" class="btn btn-danger btn-block" ng-click="endVote()">Stop Vote</button>
         <button ng-if="!voting && voteOver" class="btn btn-primary btn-block" ng-click="startVote()">Start New Vote</button>
     </div>
     <div class="col-sm-6">
         <div ng-if="voting" class="text-center">
             <p><i class="glyphicon glyphicon-time glyphicon-big"></i></p>
-            <p>Wait for everyone to vote</p>
+            <p>Wait for everyone to vote ({{voters.length - votesCount()}} missing)</p>
         </div>
         <div ng-if="voteOver">
             <div class="panel panel-success">
                 <div class="panel-heading text-center">
-                    <h4>S</h4>
+                    <h4>S <span class="badge" style="float:right">{{votes.S.length}}</span></h4>
                 </div>
                 <ul class="list-group">
                     <li class="list-group-item" ng-repeat="voter in votes.S">{{voter.name}}</li>
@@ -35,7 +35,7 @@
             </div>
             <div class="panel panel-success">
                 <div class="panel-heading text-center">
-                    <h4>M</h4>
+                    <h4>M<span class="badge" style="float:right">{{votes.M.length}}</span></h4>
                 </div>
                 <ul class="list-group">
                     <li class="list-group-item" ng-repeat="voter in votes.M">{{voter.name}}</li>
@@ -43,7 +43,7 @@
             </div>
             <div class="panel panel-warning ">
                 <div class="panel-heading text-center">
-                    <h4>L</h4>
+                    <h4>L<span class="badge" style="float:right">{{votes.L.length}}</span></h4>
                 </div>
                 <ul class="list-group">
                     <li class="list-group-item" ng-repeat="voter in votes.L">{{voter.name}}</li>
@@ -51,7 +51,7 @@
             </div>
             <div class="panel panel-danger">
                 <div class="panel-heading text-center">
-                    <h4>XL</h4>
+                    <h4>XL<span class="badge" style="float:right">{{votes.XL.length}}</span></h4>
                 </div>
                 <ul class="list-group">
                     <li class="list-group-item" ng-repeat="voter in votes.XL">{{voter.name}}</li>
@@ -59,12 +59,38 @@
             </div>
             <div class="panel panel-danger">
                 <div class="panel-heading text-center">
-                    <h4>XXL</h4>
+                    <h4>XXL<span class="badge" style="float:right">{{votes.XXL.length}}</span></h4>
                 </div>
                 <ul class="list-group">
                     <li class="list-group-item" ng-repeat="voter in votes.XXL">{{voter.name}}</li>
                 </ul>
             </div>
         </div>
+        <button ng-if="!voting && voteOver" class="btn btn-primary btn-block" ng-click="clear()">Clear</button>
     </div>
+
+    <div ng-if="!voting && !voteOver" class="col-sm-6" ng-controller="MonitorCtrl">
+        <!--
+        <label for="sprint">Sprint</label>
+        <select name="sprint" class="form-control">
+            <option>Sprint 1</option>
+            <option>Sprint 2</option>
+        </select>
+        -->
+        <label for="jiraTicket">User story</label>
+        <select ng-model="jiraTicket" name="jiraTicket" ng-change="loadJiraTicket()" class="form-control">
+            <option>LBK-1489</option>
+            <option>LBK-1552</option>
+        </select>
+
+        <dl style="padding-top: 20px" ng-if="jiraIssue">
+            <dt>ID</dt>
+            <dd style="padding-bottom: 10px;">{{jiraIssue.key}}</dd>
+            <dt>Title</dt>
+            <dd style="padding-bottom: 10px;">{{jiraIssue.fields.summary}}</dd>
+            <dt>Description</dt>
+            <dd style="padding-bottom: 10px;">{{jiraIssue.fields.description}}</dd>
+        </dl>
+    </div>
+
 </div>
