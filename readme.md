@@ -1,4 +1,4 @@
-# Node Express Angular Seed 
+# scrumVote bluesky project
 ## Overview
 
 The goal of this project is to provide a simple starting seed project for web developers that want to use the [Yeoman](http://www.yeoman.io "Yeoman") in combination with the [Yeoman generator for AngularJS](https://github.com/yeoman/generator-angular "AngularJS Generator").  Key components of Yeoman utilized here is the generation of a [grunt]("http://gruntjs.com/") configuration file and [bower]("http://bower.io/"). 
