@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('clientApp')
-    .controller('MonitorCtrl', function ($scope, $http, $route, $location, socket) {
+    .controller('MonitorCtrl', function ($scope, $http, $route, $location, $socket) {
         
         var voteCounter = 0;
         $scope.voteId = $route.current.params.id;
@@ -10,30 +10,34 @@ angular.module('clientApp')
         $scope.voteOver = false;
         $scope.voters = [];
         
-        socket.on('connect', function() {
-           socket.emit('room', $scope.voteId);
-        });
-        
-        socket.on('newVoter', function(voter){
-            $scope.voters.push(voter);
-        });
-        
-        socket.on('leaveVoter', function(voter){
-            var index = $scope.voters.indexOf(voter);
-            $scope.voters.splice(index, 1);
-        });
-        
-        socket.on('vote', function (vote) {
-            $scope.votes[vote.vote].push(vote.name);
-            if($scope.votes.S.length + $scope.votes.M.length + $scope.votes.L.length +$scope.votes.XL.length + $scope.votes.XXL.length === $scope.voters.length) {
-                socket.emit('endVote');
-                $scope.voteOver = true;
-                $scope.voting = false;
-            }
+        $socket.on('connect', function() {
+
+            $socket.emit('room', $scope.voteId);
+
+            // $socket.on('newVoter', function(voter){
+            //     $scope.voters.push(voter);
+            // });
+            
+            $socket.on('vote', function (vote) {
+                if($scope.votes[vote.vote].indexOf(vote.voter) === -1) {
+                    console.log(vote);
+                    $scope.votes[vote.vote].push(vote.voter);
+                    if($scope.votes.S.length + $scope.votes.M.length + $scope.votes.L.length +$scope.votes.XL.length + $scope.votes.XXL.length === $scope.voters.length) {
+                        $socket.emit('endVote');
+                        $scope.voteOver = true;
+                        $scope.voting = false;
+                    }
+                }
+            });
+
+            $socket.on('currentVote', function(vote) {
+                console.log('currentVote', vote);
+                $scope.voters = vote.voters;
+            });
         });
         
         $scope.startVote = function () {
-            socket.emit('startVote', voteCounter++);
+            $socket.emit('startVote', voteCounter++);
             $scope.voting = true;
             $scope.voteOver = false;
             $scope.votes = {
@@ -44,32 +48,93 @@ angular.module('clientApp')
                 XXL: [],
             };
         };
+
+        $scope.endVote = function () {
+            $socket.emit('endVote');
+            $scope.voting = false;
+            $scope.voteOver = true;
+        };
+
+        $scope.kickOff = function(voter) {
+            console.log('kickOff', voter);
+            $socket.emit('leaveVoter', voter);
+
+            var index = $scope.voters.indexOf(voter);
+            $scope.voters.splice(index, 1);
+        }
+
     })
-    .controller('VoterCtrl', function ($scope, $http, $route, socket) {
+    .controller('VoterCtrl', function ($scope, $http, $route, $socket, $uuid) {
         $scope.voteId = $route.current.params.id;
         $scope.registered = false;
         $scope.voteStarted = false;
-        
-        socket.on('connect', function() {
-            socket.emit('room', $scope.voteId);
+        $scope.voter = {};
+        $scope.voted = false;
+
+        $socket.on('connect', function() {
+            $socket.emit('room', $scope.voteId);
+
+            var voter = localStorage.getItem('bbpScrumVoter');
+            console.log(voter)
+            voter = JSON.parse(voter);
             
-            socket.on('startVote', function() {
+            if(voter) {
+                $socket.emit('newVoter', voter);
+                $scope.registered = true;
+                $scope.voter = voter;
+            }
+
+            $socket.on('startVote', function() {
                 $scope.voteStarted = true;
+                $scope.lastVote = undefined;
             });
             
-            socket.on('endVote', function() {
+            $socket.on('endVote', function() {
                 $scope.voteStarted = false;
+                $scope.lastVote = undefined;
+            });
+
+            $socket.on('leaveVoter', function(voter) {
+                if($scope.voter &&
+                    $scope.voter.id &&
+                    $scope.voter.id === voter.id) {
+
+                    // I've been kicked out :(
+                    localStorage.removeItem('bbpScrumVoter');
+                    $scope.registered = false;
+                    $scope.voter = {};
+                }
+            });
+
+            $socket.on('currentVote', function(vote) {
+                console.log('currentVote', vote);
+                $scope.currentVote = vote;
             });
         });
         
         $scope.register = function() {
-            console.info('registering', $scope.name);
-            socket.emit('newVoter', {name: $scope.voterName});
+            var voter = { name: $scope.voter.name, 
+                            id: $uuid.generate()
+                        };
+            console.info('registering', voter);
+
+            $socket.emit('newVoter', voter);
             $scope.registered = true;
+            $scope.voter = voter;
+
+            localStorage.setItem('bbpScrumVoter', JSON.stringify(voter));
         };
         
         $scope.vote = function (value) {
             $scope.lastVote = value;
-            socket.emit('vote', {name: $scope.voterName, vote: value});
+            $socket.emit('vote', {voter: $scope.voter, vote: value});
         };
+
+        $scope.deregister = function() {
+            $socket.emit('leaveVoter', $scope.voter);
+            localStorage.removeItem('bbpScrumVoter');
+            $scope.registered = false;
+            $scope.voter = {};
+        };
+
     });

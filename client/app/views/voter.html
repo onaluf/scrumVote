@@ -1,15 +1,15 @@
 <div class="row">
-    <div class="col-sm-4 col-sm-offset-4">
+    <div class="col-sm-4 col-sm-offset-4" ng-if="!currentVote.inprogress">
         <form name="form" ng-class="{'hidden': registered}">
             <div class="form-group">
-                <input type="text" class="form-control" id="name" ng-model="voterName" placeholder="Enter you name" required>
+                <input type="text" class="form-control" id="name" ng-model="voter.name" placeholder="Enter you name" required>
             </div>
             <div class="form-group">
                 <button class="btn btn-primary btn-block" ng-disabled="form.$invalid" ng-click="register()">Register</button>
             </div>
         </form>
         <div ng-if="registered">
-            <div ng-if="voteStarted" class="text-center">
+            <div ng-if="voteStarted && !lastVote" class="text-center">
                 <h4>Please cast your vote</h4>
                 <button class="btn btn-success btn-lg btn-block" ng-click="vote('S')">S</button>
                 <button class="btn btn-success btn-lg btn-block" ng-click="vote('M')">M</button>
@@ -17,11 +17,25 @@
                 <button class="btn btn-danger btn-lg btn-block" ng-click="vote('XL')">XL</button>
                 <button class="btn btn-danger btn-lg btn-block" ng-click="vote('XXL')">XXL</button>
             </div>
-            
+
+            <div ng-if="voteStarted && lastVote" class="text-center">
+                <p><i class="glyphicon glyphicon-time glyphicon-big"></i></p>
+                <p>Please wait for everybody to vote</p>
+            </div>
+
             <div ng-if="!voteStarted" class="text-center">
                 <p><i class="glyphicon glyphicon-time glyphicon-big"></i></p>
                 <p>Please wait for vote to start</p>
+                <h4>You are registered as {{voter.name}}</h4>
+                <button class="btn btn-primary btn-block" ng-click="deregister()">Let me change my name, please</button>
             </div>
+
+        </div>
+    </div>
+    <div class="col-sm-4 col-sm-offset-4" ng-if="currentVote.inprogress">
+         <div class="text-center">
+            <p><i class="glyphicon glyphicon-time glyphicon-big"></i></p>
+            <p>Too late, the vote already started</p>
         </div>
     </div>
 </div>

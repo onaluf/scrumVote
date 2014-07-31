@@ -9,10 +9,14 @@
                 <strong>Registered Voters</strong>
             </div>
             <ul class="list-group">
-                <li class="list-group-item" ng-repeat="voter in voters">{{voter.name}}</li>
+                <li class="list-group-item" ng-repeat="voter in voters">
+                <span class="glyphicon glyphicon-remove" style="float:right;" ng-click="kickOff(voter)"></span>
+                {{voter.name}}
+                </li>
             </ul>
         </div>
         <button ng-if="!voting && !voteOver" class="btn btn-primary btn-block" ng-click="startVote()">Start Vote</button>
+        <button ng-if="voting && !voteOver" class="btn btn-danger btn-block" ng-click="endVote()">Stop Vote</button>
         <button ng-if="!voting && voteOver" class="btn btn-primary btn-block" ng-click="startVote()">Start New Vote</button>
     </div>
     <div class="col-sm-6">
@@ -26,7 +30,7 @@
                     <h4>S</h4>
                 </div>
                 <ul class="list-group">
-                    <li class="list-group-item" ng-repeat="voterName in votes.S">{{voterName}}</li>
+                    <li class="list-group-item" ng-repeat="voter in votes.S">{{voter.name}}</li>
                 </ul>
             </div>
             <div class="panel panel-success">
@@ -34,7 +38,7 @@
                     <h4>M</h4>
                 </div>
                 <ul class="list-group">
-                    <li class="list-group-item" ng-repeat="voterName in votes.M">{{voterName}}</li>
+                    <li class="list-group-item" ng-repeat="voter in votes.M">{{voter.name}}</li>
                 </ul>
             </div>
             <div class="panel panel-warning ">
@@ -42,7 +46,7 @@
                     <h4>L</h4>
                 </div>
                 <ul class="list-group">
-                    <li class="list-group-item" ng-repeat="voterName in votes.L">{{voterName}}</li>
+                    <li class="list-group-item" ng-repeat="voter in votes.L">{{voter.name}}</li>
                 </ul>
             </div>
             <div class="panel panel-danger">
@@ -50,7 +54,7 @@
                     <h4>XL</h4>
                 </div>
                 <ul class="list-group">
-                    <li class="list-group-item" ng-repeat="voterName in votes.XL">{{voterName}}</li>
+                    <li class="list-group-item" ng-repeat="voter in votes.XL">{{voter.name}}</li>
                 </ul>
             </div>
             <div class="panel panel-danger">
@@ -58,7 +62,7 @@
                     <h4>XXL</h4>
                 </div>
                 <ul class="list-group">
-                    <li class="list-group-item" ng-repeat="voterName in votes.XXL">{{voterName}}</li>
+                    <li class="list-group-item" ng-repeat="voter in votes.XXL">{{voter.name}}</li>
                 </ul>
             </div>
         </div>

@@ -1,11 +1,11 @@
 'use strict';
 
 angular.module('clientApp')
-  .factory('socket', function ($rootScope) {
-        var socket = io.connect('http://bluebrain87.epfl.ch:3000');
+  .factory('$socket', function ($rootScope) {
+        var socket = io.connect(window.location.protocol + '//' + window.location.hostname + ':3000');
         return {
             on: function (eventName, callback) {
-                debugger;
+                // debugger;
                 socket.on(eventName, function () {
                     var args = arguments;
                     $rootScope.$apply(function () {

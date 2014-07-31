@@ -2,7 +2,8 @@
 
 angular.module('clientApp', ['ngRoute','monospaced.qrcode'])
 .config(function ($routeProvider) {
-    function generateUUID(){
+
+     function generateUuid() {
         var d = new Date().getTime();
         var uuid = 'xxx-xy-xxx'.replace(/[xy]/g, function(c) {
             var r = (d + Math.random()*16)%16 | 0;
@@ -10,7 +11,7 @@ angular.module('clientApp', ['ngRoute','monospaced.qrcode'])
             return (c=='x' ? r : (r&0x7|0x8)).toString(16);
         });
         return uuid;
-    };
+    }
 
     $routeProvider
         .when('/monitor/:id', {
@@ -22,7 +23,7 @@ angular.module('clientApp', ['ngRoute','monospaced.qrcode'])
             controller: 'VoterCtrl'
         })
         .otherwise({
-            redirectTo: '/monitor/' + generateUUID()
+            redirectTo: '/monitor/' + generateUuid()
         });
 });
 
