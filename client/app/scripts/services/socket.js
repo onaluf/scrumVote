@@ -2,7 +2,7 @@
 
 angular.module('clientApp')
   .factory('socket', function ($rootScope) {
-        var socket = io.connect('http://localhost:3000');
+        var socket = io.connect('http://bluebrain87.epfl.ch:3000');
         return {
             on: function (eventName, callback) {
                 debugger;
